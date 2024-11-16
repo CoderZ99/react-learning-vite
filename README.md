@@ -38,7 +38,7 @@ Dự án học React với các ví dụ thực tế và giải thích chi tiế
 
 1. Clone repository:
 ```bash
-git clone https://github.com/your-username/react-learning-vite.git
+git clone https://github.com/CoderZ99/react-learning-vite.git
 ```
 
 2. Cài đặt dependencies:
@@ -56,7 +56,7 @@ npm run dev
 
 ## 🌐 Demo
 
-Xem demo trực tuyến tại: [React Learning Project](https://your-username.github.io/react-learning-vite/)
+Xem demo trực tuyến tại: [React Learning Project](https://coderz99.github.io/react-learning-vite/)
 
 ## 📦 Scripts
 
