@@ -1,12 +1,11 @@
 import React from 'react';
-import { useNavigate, useLocation, Link } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { 
   HomeIcon, 
   ChevronLeftIcon, 
   ChevronRightIcon,
   PaintBrushIcon,
-  CommandLineIcon,
-  ArrowLeftIcon
+  CommandLineIcon
 } from '@heroicons/react/24/outline';
 
 const ALL_ROUTES = [
@@ -31,29 +30,8 @@ function Navigation({ currentPath }) {
   const isFirstRoute = !previousRoute;
   const isLastRoute = !nextRoute;
 
-  const toggleVersion = () => {
-    const newHash = version === 'css' ? '#tailwind' : '';
-    window.location.hash = newHash;
-  };
-
   return (
     <div className="w-[300px]">
-      <div className="flex justify-between items-center mb-6">
-        <Link
-          to="/"
-          className="inline-flex items-center text-sm text-slate-500 hover:text-slate-700"
-        >
-          <ArrowLeftIcon className="w-4 h-4 mr-1" />
-          Back to Topics
-        </Link>
-        <button
-          onClick={toggleVersion}
-          className="px-3 py-1 text-sm text-slate-600 bg-slate-100 rounded hover:bg-slate-200"
-        >
-          {version === 'css' ? 'Switch to Tailwind' : 'Switch to CSS'}
-        </button>
-      </div>
-
       <div className="flex justify-center items-center space-x-4">
         <button
           onClick={() => navigate(previousRoute?.path)}
@@ -97,6 +75,37 @@ function Navigation({ currentPath }) {
           Current Topic: {currentRoute.id}. {currentRoute.title}
         </div>
       )}
+
+      <div className="mt-4 flex justify-center space-x-3">
+        <button
+          onClick={() => {
+            navigate(currentPath);
+            setTimeout(() => window.location.reload(), 100);
+          }}
+          className={`w-28 px-3 py-2 text-sm rounded-md flex items-center justify-center ${
+            version === 'css'
+              ? 'bg-blue-600 text-white'
+              : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+          }`}
+        >
+          <PaintBrushIcon className="w-4 h-4 mr-2" />
+          CSS
+        </button>
+        <button
+          onClick={() => {
+            navigate(currentPath + '#tailwind');
+            setTimeout(() => window.location.reload(), 100);
+          }}
+          className={`w-28 px-3 py-2 text-sm rounded-md flex items-center justify-center ${
+            version === 'tailwind'
+              ? 'bg-blue-600 text-white'
+              : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+          }`}
+        >
+          <CommandLineIcon className="w-4 h-4 mr-2" />
+          Tailwind
+        </button>
+      </div>
     </div>
   );
 }
