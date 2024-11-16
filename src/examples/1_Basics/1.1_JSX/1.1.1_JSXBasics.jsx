@@ -184,9 +184,13 @@ function JSXBasics() {
   );
 
   return (
-    <div>
-      <Navigation currentPath="/jsx-basics" />
-      {version === 'css' ? <CSSVersion /> : <TailwindVersion />}
+    <div className="max-w-4xl mx-auto">
+      <div className="mb-8 flex justify-center">
+        <Navigation currentPath="/jsx-basics" />
+      </div>
+      <div className="bg-white p-6 rounded-lg shadow-sm">
+        {version === 'css' ? <CSSVersion /> : <TailwindVersion />}
+      </div>
     </div>
   );
 }

@@ -214,9 +214,13 @@ const container = (
   );
 
   return (
-    <div>
-      <Navigation currentPath="/conditional-rendering" />
-      {version === 'css' ? <CSSVersion /> : <TailwindVersion />}
+    <div className="max-w-4xl mx-auto">
+      <div className="mb-8 flex justify-center">
+        <Navigation currentPath="/conditional-rendering" />
+      </div>
+      <div className="bg-white p-6 rounded-lg shadow-sm">
+        {version === 'css' ? <CSSVersion /> : <TailwindVersion />}
+      </div>
     </div>
   );
 }

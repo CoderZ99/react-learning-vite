@@ -317,9 +317,11 @@ function Fragments() {
   );
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <Navigation currentPath="/fragments" />
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="max-w-4xl mx-auto">
+      <div className="mb-8 flex justify-center">
+        <Navigation currentPath="/fragments" />
+      </div>
+      <div className="bg-white p-6 rounded-lg shadow-sm">
         {version === 'css' ? <CSSVersion /> : <TailwindVersion />}
       </div>
     </div>

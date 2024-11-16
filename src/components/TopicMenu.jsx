@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   ChevronDownIcon,
@@ -7,6 +7,7 @@ import {
   CodeBracketIcon,
   CubeIcon
 } from '@heroicons/react/24/outline';
+import { CheckCircleIcon } from '@heroicons/react/24/solid';
 
 const topics = [
   {
@@ -55,98 +56,123 @@ const topics = [
 ];
 
 function TopicMenu() {
-  const [expandedTopics, setExpandedTopics] = useState(['1', '1.1']);
+  const [expandedTopics, setExpandedTopics] = useState({});
+  const [completedTopics, setCompletedTopics] = useState(() => {
+    const saved = localStorage.getItem('completedTopics');
+    return saved ? JSON.parse(saved) : {};
+  });
+
+  useEffect(() => {
+    localStorage.setItem('completedTopics', JSON.stringify(completedTopics));
+  }, [completedTopics]);
 
   const toggleTopic = (topicId) => {
-    setExpandedTopics(prev => 
-      prev.includes(topicId)
-        ? prev.filter(id => id !== topicId)
-        : [...prev, topicId]
-    );
+    setExpandedTopics(prev => ({
+      ...prev,
+      [topicId]: !prev[topicId]
+    }));
   };
 
-  const renderItems = (items) => {
+  const toggleCompleted = (itemId, e) => {
+    e.preventDefault(); // Ngăn chặn Link hoạt động khi click vào checkbox
+    setCompletedTopics(prev => ({
+      ...prev,
+      [itemId]: !prev[itemId]
+    }));
+  };
+
+  const renderTopicItems = (items) => {
     return items.map(item => (
       <Link
         key={item.id}
         to={item.path}
-        className="block py-2 text-sm text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition-colors border-l-2 border-transparent hover:border-blue-400"
+        className="flex items-center w-full px-4 py-2 text-sm text-slate-600 hover:bg-slate-50 transition-colors bg-white"
       >
-        <div className="flex items-center" style={{ paddingLeft: '5.5rem' }}>
-          {item.title}
+        <div className="w-8 flex justify-center invisible">
+          <ChevronRightIcon className="w-4 h-4" />
         </div>
+        <div className="w-8 flex justify-center invisible">
+          <CodeBracketIcon className="w-4 h-4" />
+        </div>
+        <div className="flex items-center flex-1">
+          <span>{item.title}</span>
+        </div>
+        <button
+          onClick={(e) => toggleCompleted(item.id, e)}
+          className="flex items-center hover:text-green-500 transition-colors mr-2"
+        >
+          <CheckCircleIcon 
+            className={`w-6 h-6 ${
+              completedTopics[item.id] 
+                ? 'text-green-500 fill-current stroke-[3]' 
+                : 'text-slate-300 hover:text-slate-400'
+            }`}
+          />
+        </button>
       </Link>
     ));
   };
 
   const renderSubtopics = (subtopics) => {
-    return subtopics.map(subtopic => {
-      const Icon = subtopic.icon;
-      const hasItems = subtopic.items && subtopic.items.length > 0;
-      
-      return (
-        <div key={subtopic.id} className="border-l border-gray-100">
-          <button
-            onClick={() => toggleTopic(subtopic.id)}
-            className="w-full text-left py-2 flex items-center justify-between text-gray-600 hover:bg-blue-50 hover:text-blue-600 transition-colors group"
-          >
-            <div className="flex items-center" style={{ paddingLeft: '3.5rem' }}>
-              {Icon && <Icon className="h-5 w-5 mr-3" />}
-              {subtopic.title}
-            </div>
-            {hasItems && (
-              <span className="text-gray-400 pr-4 opacity-0 group-hover:opacity-100 transition-opacity">
-                {expandedTopics.includes(subtopic.id) 
-                  ? <ChevronDownIcon className="h-5 w-5" />
-                  : <ChevronRightIcon className="h-5 w-5" />
-                }
-              </span>
+    return subtopics.map(subtopic => (
+      <div key={subtopic.id}>
+        <button
+          onClick={() => toggleTopic(subtopic.id)}
+          className={`flex items-center w-full px-4 py-2 text-sm hover:bg-slate-50 transition-colors ${
+            expandedTopics[subtopic.id] ? 'bg-slate-50' : 'bg-white'
+          }`}
+        >
+          <div className="w-8 flex justify-center">
+            {expandedTopics[subtopic.id] ? (
+              <ChevronDownIcon className="w-4 h-4 text-slate-600" />
+            ) : (
+              <ChevronRightIcon className="w-4 h-4 text-slate-600" />
             )}
-          </button>
-          {expandedTopics.includes(subtopic.id) && hasItems && (
-            <div className="bg-gray-50">
-              {renderItems(subtopic.items)}
-            </div>
-          )}
-        </div>
-      );
-    });
+          </div>
+          <div className="w-8 flex justify-center">
+            <subtopic.icon className="w-4 h-4 text-slate-600" />
+          </div>
+          <span className="text-slate-600">{subtopic.title}</span>
+        </button>
+        {expandedTopics[subtopic.id] && subtopic.items.length > 0 && (
+          <div className="ml-8 bg-white">
+            {renderTopicItems(subtopic.items)}
+          </div>
+        )}
+      </div>
+    ));
   };
 
   return (
-    <nav className="bg-white rounded-lg shadow-sm overflow-hidden max-w-3xl mx-auto">
-      {topics.map(topic => {
-        const Icon = topic.icon;
-        const hasSubtopics = topic.subtopics && topic.subtopics.length > 0;
-        
-        return (
-          <div key={topic.id} className="border-b last:border-b-0 border-gray-100">
-            <button
-              onClick={() => toggleTopic(topic.id)}
-              className="w-full text-left py-3 flex items-center justify-between font-medium text-gray-700 hover:bg-blue-50 hover:text-blue-600 transition-colors group"
-            >
-              <div className="flex items-center" style={{ paddingLeft: '1.5rem' }}>
-                {Icon && <Icon className="h-6 w-6 mr-3" />}
-                {topic.title}
-              </div>
-              {hasSubtopics && (
-                <span className="text-gray-400 pr-4 opacity-0 group-hover:opacity-100 transition-opacity">
-                  {expandedTopics.includes(topic.id)
-                    ? <ChevronDownIcon className="h-5 w-5" />
-                    : <ChevronRightIcon className="h-5 w-5" />
-                  }
-                </span>
+    <div className="bg-white rounded-lg shadow-sm border border-slate-200">
+      {topics.map(topic => (
+        <div key={topic.id} className="border-b border-slate-200 last:border-b-0">
+          <button
+            onClick={() => toggleTopic(topic.id)}
+            className={`flex items-center w-full px-4 py-3 text-left hover:bg-slate-50 transition-colors ${
+              expandedTopics[topic.id] ? 'bg-slate-50' : 'bg-white'
+            }`}
+          >
+            <div className="w-8 flex justify-center">
+              {expandedTopics[topic.id] ? (
+                <ChevronDownIcon className="w-5 h-5 text-slate-600" />
+              ) : (
+                <ChevronRightIcon className="w-5 h-5 text-slate-600" />
               )}
-            </button>
-            {expandedTopics.includes(topic.id) && hasSubtopics && (
-              <div className="bg-gray-50">
-                {renderSubtopics(topic.subtopics)}
-              </div>
-            )}
-          </div>
-        );
-      })}
-    </nav>
+            </div>
+            <div className="w-8 flex justify-center">
+              <topic.icon className="w-5 h-5 text-slate-600" />
+            </div>
+            <span className="font-medium text-slate-700">{topic.title}</span>
+          </button>
+          {expandedTopics[topic.id] && topic.subtopics.length > 0 && (
+            <div className="ml-8 bg-white">
+              {renderSubtopics(topic.subtopics)}
+            </div>
+          )}
+        </div>
+      ))}
+    </div>
   );
 }
 
